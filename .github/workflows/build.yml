@@ -13,7 +13,11 @@ jobs:
         run: |
           flutter create --platforms=android --org ru.echoes --project-name echoes build_tmp
           rm -rf build_tmp/test build_tmp/analysis_options.yaml
+          find build_tmp/android -name 'MainActivity.*' -delete
           cp -r app/. build_tmp/
+          M=build_tmp/android/app/src/main/AndroidManifest.xml
+          sed -i 's#</application>#<service android:name=".NowPlayingService" android:exported="true" android:label="Echoes" android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE"><intent-filter><action android:name="android.service.notification.NotificationListenerService"/></intent-filter></service></application>#' $M
+          grep -q NowPlayingService $M
       - name: Build
         working-directory: build_tmp
         run: |
